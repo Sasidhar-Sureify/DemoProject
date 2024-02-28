@@ -1,17 +1,21 @@
 import { test, expect } from "@playwright/test";
 import { Page } from "@playwright/test";
-import LCCREATION from "./Login";
+import LOGIN from "../Pages/LoginPage";
+import NavigatetoContentPillar from "../Pages/NavContentPillarPage";
+import { sfstgurl } from "../TestData/TestData";
+import LCCREATION from "../Pages/LearningCenter";
 
 let page: Page;
+let login: LOGIN
+let navigatetoContentPillar: NavigatetoContentPillar
 let lccreation: LCCREATION;
-
-let sfuaturl: string = "https://sfuat.sureify.com";
-let sfstgurl: string = "https://statefarmstg.sureify.com";
 
 
 test.beforeAll(async ({ browser }) => 
 {
   page = await browser.newPage();
+  login = new LOGIN(page);
+  navigatetoContentPillar = new NavigatetoContentPillar(page);
   lccreation = new LCCREATION(page);
 });
 
@@ -22,10 +26,11 @@ test.use({
   },
 });
 
-test.describe("Login for State Farm STG Carrier Panel", () => 
+
+test.describe("LC Creation", () => 
 {  
   test.setTimeout(900000);
-    test(`Login`, async () => 
+    test(`Creationg LC with CTA Type CR`, async () => 
     {
       await test.step("URL Navigation", async () => 
       {
@@ -34,12 +39,12 @@ test.describe("Login for State Farm STG Carrier Panel", () =>
 
       await test.step("Login to SF Carrier Panel", async () => 
       {
-        await lccreation.LoginPage();
+        await login.LoginPage();
       });
 
       await test.step("Content Pillar Navigation", async () => 
       {
-        await lccreation.NavigatetoContentPillar();
+        await navigatetoContentPillar.NavigatetoContentPillar();
       });
 
       await test.step("LC Category Creation", async () => 

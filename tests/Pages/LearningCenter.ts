@@ -9,9 +9,8 @@ let currentTime = currentDate.toLocaleTimeString();
 let LCCategoryName : string = `LC Cat ${faker.number.int()}`;
 let LCArticleName : string = `LC Art ${faker.number.int()}`;
 let YoutubeURL : string = `https://www.youtube.com/watch?v=pWCt990TDIU`;
-//console.log("LC Cat Name is:", LCCategoryName);
-export default class LCCREATION
 
+export default class LCCREATION
 {    
     protected page: Page;
     constructor(page: Page) 
@@ -19,14 +18,6 @@ export default class LCCREATION
         this.page = page;
     }
     
-    Email=() => this.page.locator("//input[@name='email' and @id='email']");
-    Password=() => this.page.locator("//input[@name='password' and @id='password']");
-    LoginButton=() => this.page.locator("//*[@id='btn_login']");
-
-    //HomeText=() => this.page.locator("/html/body/div[6]/div/div[1]/div/div/h2");
-    Contentpillar=() => this.page.locator("//*[@id='incentives-submenu' and contains(text(),'Content')]");
-    ContentPillarProcessing = () => this.page.locator("//div[@id='rewards_config_table_processing']");
-
     LCProcessing = () => this.page.locator("//div[@id='articles_table_processing']");
     LC=() => this.page.locator("//ul[@id='incentives-submenu']/li[@class='sub_menu_level ']/a/span[text()='Learning Center']");
     LCConfigureCategories=() => this.page.locator("//span[text()='Learning Center']/parent::a/following-sibling::ul//span[text()='Configure Categories']");
@@ -62,7 +53,6 @@ export default class LCCREATION
     LCAudioDescribedVersion = () => this.page.locator("//input[@name='transcript_url']");
     LCCaptionsURL = () => this.page.locator("//input[@name='caption_url']");
     LCVideoTranscriptFrame = () => this.page.frameLocator('#video_transcript_ifr').locator('#tinymce');
-    //*[@id="video_transcript_ifr"]
     LCCTATypeDropdown = () => this.page.locator("select[name='cta_type']");
     LCCTACRButtonLabel = () => this.page.locator("//input[@name='button_label']");
     LCCTACRConfirmMessage = () => this.page.locator("//textarea[@name='confirm_message']");
@@ -83,25 +73,13 @@ export default class LCCREATION
     LCRewards = () => this.page.locator("//input[@class='inapp_rewards_type' and @value='1']");
     LCNoRewards = () => this.page.locator("//input[@class='inapp_rewards_type' and @value='0']");
     LCArticleCreateButton = () => this.page.locator("//button[@id='product_create']");
+    LCArticleTitleConfirm = () => this.page.locator("//*[@class='dropdown col-md-10']//a[contains(text(),'"+LCArticleName+"')]");
 
 
-
-    async LoginPage(): Promise<void>
-    {
-        await this.Email().fill('sasidhar.chennamsetty@sureify.com');
-        await this.Password().fill('Sureify@123');
-        await this.LoginButton().click();
-    }
-
-    async NavigatetoContentPillar(): Promise<void>
-    {
-        await this.Contentpillar().click(); 
-        await expect(this.ContentPillarProcessing()).toHaveAttribute('style', 'display: none;', { timeout: 1000 * 1000 });            
-        await this.LC().click();
-    }
-
-    async LCCategory(): Promise<void>
+   
+     async LCCategory(): Promise<void>
     {        
+        await this.LC().click();
         await this.LCConfigureCategories().click();
         await expect(this.LCProcessing()).toHaveAttribute('style', 'display: none;', { timeout: 1000 * 1000 });
         await this.LCNewCategory().click();
@@ -152,15 +130,16 @@ export default class LCCREATION
         await this.LCRewards().click();
         await this.LCAllPolicyholders().click();
         await this.LCArticleCreateButton().click();
-        await this.page.pause();
-        
-        try 
+        //await this.page.pause();
+
+        try
         {
-            
+            await this.LCArticleTitleConfirm().isVisible();
+            console.log('LC Article got Created and Verified Successfully');
             
         } catch (error) 
         {
-            console.log(`Failed to clik on Content Pillar. Error Message is:${error.Message}`);
+            console.log(`Failed to create LC Article. Error Message is:${error.Message}`);
             
         }
 
