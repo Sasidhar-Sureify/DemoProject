@@ -3,19 +3,47 @@ import { time } from "console";
 import { promises } from "dns";
 import { test } from "node:test";
 import { faker, th } from '@faker-js/faker';
+import { CommonBase } from "./CommonPage";
 let currentDate = new Date();
 let currentTime = currentDate.toLocaleTimeString();
 //let LCCategoryName: string = `LC Cat ${currentDate.toLocaleDateString()} ${currentTime}`;
 let LCCategoryName : string = `LC Cat ${faker.number.int()}`;
-let LCArticleName : string = `LC Art ${faker.number.int()}`;
+//let LCArticleName : string = `LC Article ${faker.number.int()}`;
 let YoutubeURL : string = `https://www.youtube.com/watch?v=pWCt990TDIU`;
+let CopyArticleName : string;
 
-export default class LCCREATION
+export interface LC_records 
+  {
+    LC_Article_Name: string;
+    //Schedule: string;
+    LC_Article_Description: string;
+    Video_Source: string;
+    Video_URL: any;
+    Audio_Described_Version: any;
+    Captions_URL: any;
+    Transcript: string;
+    Rewards: string;
+  }
+  
+  export const LCColumns = 
+  [
+    "LC_Article_Name",
+    //"Schedule",
+    "LC_Article_Description",
+    "Video_Source",
+    "Video_URL",
+    "Audio_Described_Version",
+    "Captions_URL",
+    "Transcript",
+    "Rewards", 
+ ];
+
+export default class LCCREATION extends CommonBase
 {    
-    protected page: Page;
+    
     constructor(page: Page) 
     {
-        this.page = page;
+        super(page);       
     }
     
     LCProcessing = () => this.page.locator("//div[@id='articles_table_processing']");
@@ -31,6 +59,7 @@ export default class LCCREATION
     LCCreateCategoryAddUserIds=() => this.page.locator("//label[contains(text(), 'Add User IDs')]");
     LCCategoryCreateButton = () => this.page.locator("//button[@id='product_create']");
     LCCategorysettingIcon = () => this.page.locator("//ul[@id='dropdown_li']//a[contains(text(),'" + LCCategoryName + "')]/preceding-sibling::span/b",);
+    LCCategoryDeleteButton = () => this.page.locator("//li[@class='category_dropdown dropdown ui-sortable-handle']//span[@aria-expanded='true']//following::li/a[@class='delete_learning_category' and contains(text(),'Delete')]");
     LCCategoryPublishButton = () => this.page.locator("//li[@class='category_dropdown dropdown ui-sortable-handle']//a[contains(text(),'"+LCCategoryName+"')]//following-sibling::ul//following::a[contains(text(),'Publish')]");
     LCCategoryYesPublishButton = () => this.page.locator("//div[@class='sweet-alert show-sweet-alert visible']//following::button[contains(text(),'Yes, publish')]");
     LCCategoryPublishOkButton = () => this.page.locator("//div[@class='sweet-alert show-sweet-alert visible']//following::button[contains(text(),'Ok')]");
@@ -73,12 +102,13 @@ export default class LCCREATION
     LCRewards = () => this.page.locator("//input[@class='inapp_rewards_type' and @value='1']");
     LCNoRewards = () => this.page.locator("//input[@class='inapp_rewards_type' and @value='0']");
     LCArticleCreateButton = () => this.page.locator("//button[@id='product_create']");
-    LCArticleTitleConfirm = () => this.page.locator("//*[@class='dropdown col-md-10']//a[contains(text(),'"+LCArticleName+"')]");
-
+    LCArticleTitle = () => this.page.locator("//*[@class='dropdown col-md-10']//a[contains(text(),'"+CopyArticleName+"')]");
+    LCArticleDeletebutton = () => this.page.locator("//a[contains(text(),'"+CopyArticleName+"') and @aria-expanded='true']/following-sibling::ul//a[@id='remove_name' and contains(text(),'Delete')]");
+    LCDeletePopupYes = () => this.page.locator("//div[@class='sweet-container']/div[@class='sweet-alert show-sweet-alert visible']//following::button[@id='ok_button' and contains(text(),'Yes, delete')]");
 
    
      async LCCategory(): Promise<void>
-    {        
+    {       
         await this.LC().click();
         await this.LCConfigureCategories().click();
         await expect(this.LCProcessing()).toHaveAttribute('style', 'display: none;', { timeout: 1000 * 1000 });
@@ -98,26 +128,41 @@ export default class LCCREATION
         await expect(this.LCProcessing()).toHaveAttribute('style', 'display: none;', { timeout: 1000 * 1000 });
     }
 
-    async LCArticle(): Promise<void>
+    async LCArticle(
+    {
+    LC_Article_Name,
+    //Schedule,
+    LC_Article_Description,
+    Video_Source,
+    Video_URL,
+    Audio_Described_Version,
+    Captions_URL,
+    Transcript,
+    Rewards,
+    }:LC_records): Promise<void>
     {        
         await this.LCCategorywithTitle().click();   
         await expect(this.LCProcessing()).toHaveAttribute('style', 'display: none;', { timeout: 1000 * 1000 });   
         await this.LCAddArticlebutton().click(); 
-        await this.LCArticleName().fill(LCArticleName);
+        CopyArticleName = `${LC_Article_Name} ${faker.number.int()}`;
+        await this.LCArticleName().fill(CopyArticleName);
+        //await this.LCArticleName().click();
+        //await this.LCArticleName().innerText();
+
         await this.LCCategoryDropdown().click();
         //To select LC Category from Category dropdown while creating LC Article.
         await this.LCCategoryDropdown().selectOption({label: LCCategoryName});
         //await this.LCCategoryDropdownwithCatName().click();
         await this.LCImmediatelyUponPublishRadioButton().click();
-        await this.LCArticleDescription().fill("Article Description");
+        await this.LCArticleDescription().fill(LC_Article_Description);
         await this.uploadingImageStep(this.page);
         await this.LCVideoSource().click();
         //To select Youtube from Video source dropdown.
-        await this.LCVideoSource().selectOption({label: 'Youtube'});        
-        await this.LCVideoURL().fill(YoutubeURL);
-        await this.LCAudioDescribedVersion().fill(YoutubeURL);
-        await this.LCCaptionsURL().fill(YoutubeURL);
-        await this.LCVideoTranscriptFrame().fill("LC Transcript Text");
+        await this.LCVideoSource().selectOption({label: Video_Source});        
+        await this.LCVideoURL().fill(Video_URL);
+        await this.LCAudioDescribedVersion().fill(Audio_Described_Version);
+        await this.LCCaptionsURL().fill(Captions_URL);
+        await this.LCVideoTranscriptFrame().fill(Transcript);
         await this.LCCTATypeDropdown().click();
         //To select Contact Requested CTA Type from CTA dropdown.
         await this.LCCTATypeDropdown().selectOption({label: 'Contact Requested'});
@@ -127,28 +172,49 @@ export default class LCCREATION
         await this.LCPopUpRadioButton().click();
         await this.LCPopupCTALabel().fill('Continue');
         await this.LCInAppShortDesc().fill('LC In App popup');
-        await this.LCRewards().click();
+        if (Rewards == 'Yes') 
+        {
+           await this.LCRewards().click();
+        } else 
+        {
+            await this.LCNoRewards().click();
+        }        
         await this.LCAllPolicyholders().click();
         await this.LCArticleCreateButton().click();
         //await this.page.pause();
 
-        try
+       /* try
         {
-            await this.LCArticleTitleConfirm().isVisible();
+            await this.LCArticleTitle().isVisible();
             console.log('LC Article got Created and Verified Successfully');
             
         } catch (error) 
         {
             console.log(`Failed to create LC Article. Error Message is:${error.Message}`);
             
-        }
+        }*/
 
     }
 
-   
+    async LCDeletion(): Promise<void>
+    {
+       await this.LCCategorywithTitle().click();
+       console.log("clicked on LC Category Title")
+       await this.LCArticleTitle().click();
+       console.log("clicked on LC Article Title")
+       await this.LCArticleDeletebutton().click();
+       console.log("clicked on LC Article Delete button")
+       await this.LCDeletePopupYes().click();
+       console.log("clicked on LC Article Delete Yes button")
+       await this.LCCategoryPublishOkButton().click();
+       console.log("clicked on LC Article Delete success button")
+       await this.LCCategorysettingIcon().click();
+       await this.LCCategoryDeleteButton().click();
+       await this.LCDeletePopupYes().click();
+       await this.LCCategoryPublishOkButton().click();
+    }   
     
 }
-
 
 
 

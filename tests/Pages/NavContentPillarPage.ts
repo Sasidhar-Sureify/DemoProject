@@ -1,14 +1,15 @@
 import { Page, expect } from "@playwright/test";
-export default class NavigatetoContentPillar
+import { CommonBase } from "./CommonPage";
+export default class NavigatetoContentPillar extends CommonBase
 
 {
     static NavigatetoContentPillar() {
       throw new Error("Method not implemented.");
     }    
-    protected page: Page;
+    
     constructor(page: Page) 
     {
-        this.page = page;
+        super(page);       
     }
 
     Contentpillar=() => this.page.locator("//*[@id='incentives-submenu' and contains(text(),'Content')]");
@@ -19,7 +20,6 @@ export default class NavigatetoContentPillar
         await this.Contentpillar().click(); 
         await expect(this.ContentPillarProcessing()).toHaveAttribute('style', 'display: none;', { timeout: 1000 * 1000 });            
     } 
-    
 }
 
 
