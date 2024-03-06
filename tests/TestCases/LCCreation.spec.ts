@@ -4,6 +4,11 @@ import LOGIN from "../Pages/LoginPage";
 import NavigatetoContentPillar from "../Pages/NavContentPillarPage";
 import { sfstgurl } from "../TestData/TestData";
 import LCCREATION from "../Pages/LearningCenter";
+import { LCColumns } from "../Pages/LearningCenter";
+import { parse } from "csv-parse/sync";
+import { LC_fileContent, fileSep, testDataFolder } from "../Pages/CSVFile";
+import path from "node:path";
+import fs from "fs";
 
 let page: Page;
 let login: LOGIN
@@ -26,6 +31,18 @@ test.use({
   },
 });
 
+ const LCrecords: any = parse(LC_fileContent, {
+  delimiter: ",",
+  columns: LCColumns,
+  fromLine: 2,
+  skip_empty_lines: true,
+});
+console.log("LC CSV Records:", LCrecords);
+
+let LC_csvCount: number;
+LC_csvCount = LCrecords.length;
+console.log("Records of LC CSV File", LCrecords);
+
 
 test.describe("LC Creation", () => 
 {  
@@ -35,6 +52,16 @@ test.describe("LC Creation", () =>
       await test.step("URL Navigation", async () => 
       {
         await page.goto(sfstgurl);
+        /*try 
+        {
+          await page.goto(sfstgurl);
+          console.log("URL got Launched");
+        } 
+        catch (error) 
+        {
+          
+        }*/
+        
       });      
 
       await test.step("Login to SF Carrier Panel", async () => 
@@ -54,7 +81,15 @@ test.describe("LC Creation", () =>
 
       await test.step("LC Article Creation", async () => 
       {
-        await lccreation.LCArticle();
+        for (let i = 0; i < LC_csvCount; i++)
+        {
+        await lccreation.LCArticle(LCrecords[i]);
+        }
+      });
+
+      await test.step("LC Article Deletion", async() =>
+      {
+        await lccreation.LCDeletion();
       });
 
     });
