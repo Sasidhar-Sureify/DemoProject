@@ -31,10 +31,13 @@ export default class LOGIN extends CommonBase
         catch (error) 
         {
             console.log("Executed Catch block");
+            //await this.page.reload({ waitUntil: 'networkidle', timeout: 5000 });
+            //await this.page.reload();
+            // this.page.waitForTimeout(5000);
             await expect(this.MainonDashboard()).toBeVisible();
             //await expect(this.page.locator(this.MainonDashboard())).toBeVisible({timeout:300*100});
             //expect (false).toBeTruthy();   
-            await this.page.pause();         
+                    
         }
         
     }  

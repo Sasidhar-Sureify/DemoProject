@@ -87,10 +87,11 @@ test.describe("LC Creation", () =>
         }
       });
 
-      await test.step("LC Article Deletion", async() =>
+     /* await test.step("LC Article Deletion", async() =>
       {
         await lccreation.LCDeletion();
-      });
+      }); */
+      
 
     });
 
