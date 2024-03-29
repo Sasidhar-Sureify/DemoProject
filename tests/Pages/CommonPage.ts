@@ -2,6 +2,7 @@ import { Page } from "@playwright/test";
 import { faker, th } from '@faker-js/faker';
 
 let tagNameRecords: string[], tagCount: number, userIdsRecord: string[], userIdCount: number;
+let AudienceCount: string[];
 export class CommonBase
 {
 
@@ -67,10 +68,10 @@ export class CommonBase
                 //await this.page.waitForTimeout(2000);
                 await this.IndividualTagsRecords().isVisible();
                 await this.IndividualTagsRecords().click();
-                let ScreenshotName: string = tagNameRecords[tagCount]+`${faker.number.int()}`;
-                await this.page.screenshot({ path:'tests/Screenshots/Screenshot'+ScreenshotName+'.jpg' });
-               //let AudienceSize: string = await this.AudienceSize().innerText();
-               //console.log("Tags Audience Size is: " +AudienceSize);
+               // let ScreenshotName: string = tagNameRecords[tagCount]+`${faker.number.int()}`;
+                //await this.page.screenshot({ path:'tests/Screenshots/Screenshot'+ScreenshotName+'.jpg' });
+               AudienceCount = await this.AudienceSize().allTextContents();
+               console.log("Tags Audience Count is: " +AudienceCount);
             }
             let userIdsSplit: string = User_ID_Numbers;
             userIdsRecord = userIdsSplit.split('|');
@@ -82,10 +83,10 @@ export class CommonBase
                 //await this.page.waitForTimeout(2000);
                 await this.IndividualUserIdsRecords().isVisible();
                 await this.IndividualUserIdsRecords().click();
-                let ScreenshotName: string = userIdsRecord[userIdCount]+`${faker.number.int()}`;
-                await this.page.screenshot({ path:'tests/Screenshots/Screenshot'+ScreenshotName+'.jpg' });
-                //let AudienceSize: string = await this.AudienceSize().innerText();
-               //console.log("Users ID Audience Size is: " +AudienceSize);
+               // let ScreenshotName: string = userIdsRecord[userIdCount]+`${faker.number.int()}`;
+                //await this.page.screenshot({ path:'tests/Screenshots/Screenshot'+ScreenshotName+'.jpg' });
+                AudienceCount = await this.AudienceSize().allTextContents();
+               console.log("Users ID Audience Count is: " +AudienceCount);
             }
         } else {
             console.log(Audience_Segment_Type);
