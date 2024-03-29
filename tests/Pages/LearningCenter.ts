@@ -313,6 +313,8 @@ export default class LCCREATION extends CommonBase
             User_ID_Numbers,);
 
         await this.LCArticleCreateButton().click();
+        await this.LCCategorywithTitle().click();
+        await this.LCArticleTitle().isVisible();
         
 
        /* try
